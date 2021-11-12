@@ -6,19 +6,19 @@
         <hr />
         <form @submit.prevent="onSubmit">
           <div class="form-group">
-            <label>E-posta Adresiniz</label>
-            <input v-model="user.email" type="email" class="form-control" placeholder="E-posta adresinizi giriniz" />
+            <label>E-mail</label>
+            <input v-model="user.email" type="email" class="form-control" placeholder="Enter the E-posta adress" />
           </div>
           <div class="form-group">
-            <label>Şifre</label>
-            <input v-model="user.password" type="password" class="form-control" placeholder="Şifreniz..." />
+            <label>Password</label>
+            <input v-model="user.password" type="password" class="form-control" placeholder="Password..." />
           </div>
           <div class="button-container d-flex flex-column align-items-center">
             <button type="submit" :class="{ 'btn-primary': isUser, 'btn-success': !isUser }" class="btn btn-block mb-2">
-              {{ isUser ? 'Giriş Yap' : 'Kayıt Ol' }}
+              {{ isUser ? 'Sign in' : 'Sign up' }}
             </button>
             <a href="#" @click.prevent="isUser = !isUser" class="text-secondary">
-              {{ isUser ? 'Üye değilim' : 'Üyeliğim var' }}
+              {{ isUser ? 'I am not a member' : 'I have a membership' }}
             </a>
           </div>
         </form>
@@ -27,7 +27,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
 export default {
   data() {
     return {
@@ -40,9 +39,7 @@ export default {
   },
   methods: {
     onSubmit() {
-      axios.post('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBWMgJ1KHSYNFwbQp_Tk8vYCX4Yd-NpwhM', { email: this.user.email, password: this.user.password, returnSecureToken: true }).then((res) => {
-        console.log(res);
-      });
+      this.$store.dispatch('login', { ...this.user, isUser: this.isUser });
     },
   },
 };
