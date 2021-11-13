@@ -7,7 +7,7 @@
         <form @submit.prevent="onSubmit">
           <div class="form-group">
             <label>E-mail</label>
-            <input v-model="user.email" type="email" class="form-control" placeholder="Enter the E-posta adress" />
+            <input v-model="user.email" type="email" class="form-control" placeholder="E-posta..." />
           </div>
           <div class="form-group">
             <label>Password</label>
@@ -39,7 +39,10 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.$store.dispatch('login', { ...this.user, isUser: this.isUser });
+      // I made a retun in axios store so we got another promise
+      this.$store.dispatch('login', { ...this.user, isUser: this.isUser }).then(() => {
+        this.$router.push('/');
+      });
     },
   },
 };
