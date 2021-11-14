@@ -29,7 +29,7 @@ const store = new Vuex.Store({
         return false;
       }
     },
-    login({ commit }, authData) {
+    login({ commit, dispatch }, authData) {
       let authLink = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=';
 
       if (authData.isUser) {
@@ -40,14 +40,23 @@ const store = new Vuex.Store({
         commit('setToken', res.data.idToken);
         //We set the token to localStorge
         localStorage.setItem('token', res.data.idToken);
+        // We converted it to inteeger with "+"
+        dispatch('setTimeoutTimer', +res.data.expiresIn);
       });
     },
-    logout({ commit, state }) {
+    logout({ commit }) {
       // I ran the logout method in the store with dispatch
-      commit('clearToken', state.token);
+      commit('clearToken');
 
       // delete data with id "token" from localStorge
       localStorage.removeItem('token');
+      router.replace('/auth');
+    },
+    // automatic logout process
+    setTimeoutTimer({ dispatch }, expiresIn) {
+      setTimeout(() => {
+        dispatch('logout');
+      }, expiresIn);
     },
   },
   getters: {
