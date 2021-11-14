@@ -21,12 +21,15 @@
 <script>
 export default {
   methods: {
-    logout() {},
+    logout() {
+      this.$store.dispatch('logout');
+    },
   },
   computed: {
     logoutClass() {
       return {
-        'd-none': false,
+        // add class attribute if token if not
+        'd-none': !this.$store.getters.isAuthenticated,
       };
     },
   },

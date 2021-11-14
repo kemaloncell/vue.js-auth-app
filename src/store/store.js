@@ -12,9 +12,9 @@ const store = new Vuex.Store({
     setToken(state, token) {
       state.token = token;
     },
-    /*  clearToken(state) {
+    clearToken(state) {
       state.token = '';
-    }, */
+    },
   },
   actions: {
     login({ commit }, authData) {
@@ -24,11 +24,15 @@ const store = new Vuex.Store({
         authLink = ' https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=';
       }
 
-      axios.post(authLink + 'AIzaSyBWMgJ1KHSYNFwbQp_Tk8vYCX4Yd-NpwhM', { email: authData.email, password: authData.password, returnSecureToken: true }).then((res) => {
+      return axios.post(authLink + 'AIzaSyBWMgJ1KHSYNFwbQp_Tk8vYCX4Yd-NpwhM', { email: authData.email, password: authData.password, returnSecureToken: true }).then((res) => {
         commit('setToken', res.data.idToken);
       });
     },
-    /*  logout({ commit, dispatch, state }) {}, */
+    logout({ commit, state }) {
+      // I ran the logout method in the store with dispatch
+      commit('clearToken', state.token);
+      this.$router.replace('/');
+    },
   },
   getters: {
     isAuthenticated(state) {
