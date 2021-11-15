@@ -19,20 +19,29 @@ const store = new Vuex.Store({
   },
   actions: {
     //this function is executed by the created method in app.vue
-    initAuth({ commit }) {
+    initAuth({ commit, dispatch }) {
       //set token to localStorge on page refresh
       let token = localStorage.getItem('token');
       if (token) {
-        commit('setToken', token);
-        router.push('/');
+        let expirationDate = localStorage.getItem('expirationDate');
+        let time = new Date().getTime();
+        if (time >= expirationDate) {
+          console.log('token süresi geçmiş');
+          dispatch('logout');
+        } else {
+          commit('setToken', token);
+          router.push('/');
+        }
       } else {
         return false;
       }
     },
-    login({ commit, dispatch }, authData) {
+    login({ commit }, authData) {
+      // signUp
       let authLink = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=';
 
       if (authData.isUser) {
+        // signIn
         authLink = ' https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=';
       }
 
@@ -40,8 +49,7 @@ const store = new Vuex.Store({
         commit('setToken', res.data.idToken);
         //We set the token to localStorge
         localStorage.setItem('token', res.data.idToken);
-        // We converted it to inteeger with "+"
-        dispatch('setTimeoutTimer', +res.data.expiresIn);
+        localStorage.setItem('expirationDate', new Date().getTime() + 5000);
       });
     },
     logout({ commit }) {
@@ -50,6 +58,7 @@ const store = new Vuex.Store({
 
       // delete data with id "token" from localStorge
       localStorage.removeItem('token');
+      localStorage.removeItem('expirationDate');
       router.replace('/auth');
     },
     // automatic logout process
