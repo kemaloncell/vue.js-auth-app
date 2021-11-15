@@ -25,18 +25,23 @@ const store = new Vuex.Store({
       if (token) {
         let expirationDate = localStorage.getItem('expirationDate');
         let time = new Date().getTime();
+        // log out if time expires
         if (time >= expirationDate) {
-          console.log('token süresi geçmiş');
+          console.log('token time has passed');
           dispatch('logout');
         } else {
+          // if the time has not passed when the page is refreshed
           commit('setToken', token);
+          let timerSecond = +expirationDate - time;
+          console.log(`timerSecond`, timerSecond);
+          dispatch('setTimeoutTimer', timerSecond);
           router.push('/');
         }
       } else {
         return false;
       }
     },
-    login({ commit }, authData) {
+    login({ commit, dispatch }, authData) {
       // signUp
       let authLink = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=';
 
@@ -49,7 +54,8 @@ const store = new Vuex.Store({
         commit('setToken', res.data.idToken);
         //We set the token to localStorge
         localStorage.setItem('token', res.data.idToken);
-        localStorage.setItem('expirationDate', new Date().getTime() + 5000);
+        localStorage.setItem('expirationDate', new Date().getTime() + +res.data.expiresIn * 1000);
+        dispatch('setTimeoutTimer', res.data.expiresIn * 1000);
       });
     },
     logout({ commit }) {
